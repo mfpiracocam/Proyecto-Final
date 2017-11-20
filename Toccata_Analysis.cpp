@@ -5,12 +5,13 @@
 int main(void){
 
   int N = 10;
+  double frec = 11025;
   std::vector<double> data;
   
   fftw_complex *in_data, *transf_data, *inv_data;
   
   //Read Data from input file
-  std::ifstream data_file("14-chorzempa.2756.txt");
+  std::ifstream data_file("14-chorzempa.11025.txt");
 
   int ii = 0;
   double d = 0.0;
@@ -23,14 +24,14 @@ int main(void){
   
   //Initialize n-tuple for DFT
   N = data.size();
-
+  
   in_data = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
   transf_data = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
   inv_data = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
 
   //Fill n-tuple with data
   for(int ii = 0; ii < N; ii++){
-    in_data[ii][0] = data[ii];
+    in_data[ii][0] = data[ii]/1000.0;
     in_data[ii][1] = 0.0;
   }
 
@@ -41,7 +42,7 @@ int main(void){
 
   //Print data
   normalize(transf_data,N);
-  print_data(transf_data,N);
+  print_realFrecspace(transf_data,N,frec,22050);
   
   return 0;
   
