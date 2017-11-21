@@ -1,10 +1,17 @@
-#include "fourier_routines.h"
+#include "fourier_proyect.h"
 #include <fstream>
-#include <vector>
+
+//This program is intended to perform fourier analysis of Toccata and Fuge in
+//d-minor for different sampling frequencies. This may show the importance of
+//the right choosing of the sampling rate. IMPORTANT: Data is scaled in a fac-
+//tor of one thousand of the values obtained.
+
+//.txt files from: http://cmp.fmf.uni-lj.si/. Computational Methods for Physi-
+//cists. Simon Sirca and Martin Horvat.
 
 int main(void){
 
-  int N = 10;
+  int N = 0.0; 
   double frec = 11025;
   std::vector<double> data;
   
@@ -13,12 +20,10 @@ int main(void){
   //Read Data from input file
   std::ifstream data_file("14-chorzempa.11025.txt");
 
-  int ii = 0;
   double d = 0.0;
   while(!data_file.eof()){
     data_file >> d;
     data.push_back(d);
-    ii++;
   }
   data_file.close();
   
@@ -35,14 +40,12 @@ int main(void){
     in_data[ii][1] = 0.0;
   }
 
-  //print_data(in_data,N);
-  
   //Compute DFT Using FFTW v.3.3.7 (Last version)
   FFTW_r(in_data, transf_data, N);
 
   //Print data
   normalize(transf_data,N);
-  print_realFrecspace(transf_data,N,frec,22050);
+  print_timecspace(transf_data,N,frec,22050);
   
   return 0;
   
