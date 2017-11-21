@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fftw3.h>
 #include <cmath>
+#include <vector>
 
 void normalize(fftw_complex* signal, int N);
 void print_frecspace(fftw_complex* transf, int N);
@@ -9,86 +10,62 @@ void print_timespace(fftw_complex* transf, int N, double dt);
 void FFTW_r(fftw_complex *in_data, fftw_complex *trans_data, int N, double dt);
 void IFFTW_r(fftw_complex *in_data, fftw_complex *trans_data, int N, double dt);
 
-void normalize(fftw_complex* transf, int N){
-  
-  for(int ii = 0; ii < N; ii++){
+double armonic_add(int nmin, int nmax, double frec, int NMAX, int jj, double time);;
+void print_RealData(const std::vector<double>& time, const std::vector<double>& func);
 
+
+void normalize(fftw_complex* transf, int N){
+  for(int ii = 0; ii < N; ii++){
     transf[ii][0] *= 1.0/sqrt(N);
-    transf[ii][1] *= 1.0/sqrt(N);
-    
+    transf[ii][1] *= 1.0/sqrt(N); 
   }
-  
 }
 
 void print_frecspace(fftw_complex* transf, int N){
-
   double norm = 0;
-  
   for(int ii = 0; ii < N; ii++){
-
     norm = transf[ii][0]*transf[ii][0] + transf[ii][1]*transf[ii][1];
-
     std::cout << ii * 2*M_PI/N << "\t"
 	      << transf[ii][0] << "\t"
 	      << transf[ii][1] << "\t"
 	      << norm << " " << std::endl;
-
   }
-
   std::cout << std::endl;
-    
 }
 
 void print_realFrecspace(fftw_complex* transf, int N, double sampfrec,double frecmax){
-
   double norm = 0;
   double rfrec = 0;
-  
   for(int ii = 0; rfrec <= frecmax; ii++){
-
-     rfrec = sampfrec * ii/N;
-
+    rfrec = sampfrec * ii/N;
     if(rfrec <= sampfrec/2.0){
-      norm = sqrt(transf[ii][0]*transf[ii][0] + transf[ii][1]*transf[ii][1]);
+      norm = transf[ii][0]*transf[ii][0] + transf[ii][1]*transf[ii][1];
       std::cout << rfrec << "\t"
 		<< transf[ii][0] << "\t"
 		<< transf[ii][1] << "\t"
 		<< norm << "\t" << std::endl;
     }
-
     if(rfrec > sampfrec/2.0){
-
-      int jj = ii - floor(2.0*ii/N)*floor(N/2);
-      
+      int jj = ii - floor(2.0*ii/N)*floor(N/2); 
       norm = transf[jj][0]*transf[jj][0] + transf[jj][1]*transf[jj][1];
       std::cout << rfrec << "\t"
 		<< transf[jj][0] << "\t"
 		<< transf[jj][1] << "\t"
 		<< norm << "\t" << std::endl;
-    }
-    
+    } 
   }
-  
-  
 }
 
 void print_timespace(fftw_complex* transf, int N, double dt){
-
   double norm = 0;
-  
   for(int ii = 0; ii < N; ii++){
-
     norm = sqrt(transf[ii][0]*transf[ii][0] + transf[ii][1]*transf[ii][1]);
-
     std::cout << ii * dt/N << "\t"
 	      << transf[ii][0] << "\t"
 	      << transf[ii][1] << "\t"
 	      << norm << " " << std::endl;
-
   }
-
   std::cout << std::endl;
-    
 }
 
 void FFTW_r(fftw_complex *in_data, fftw_complex *transf_data, int N){
@@ -123,4 +100,18 @@ void IFFTW_r(fftw_complex *in_data, fftw_complex *transf_data, int N){
   //deallocates all
   fftw_destroy_plan(p);
   
+}
+
+double armonic_add(int nmin, int nmax,double frec, int NMAX, int jj, double time){
+  double y = 0;
+  for(int ii = nmin; ii < nmax+1; ii++){
+    y += sin(2.0*M_PI*ii*frec * jj*time/NMAX) + cos(2.0*M_PI*ii*frec * jj*time/NMAX);
+  }
+  return y;
+}
+
+void print_RealData(const std::vector<double>& time, const std::vector<double>& func){ 
+  for(int ii = 0; ii < time.size(); ii++){
+    std::cout << time[ii] << "\t" << func[ii] << std::endl;
+  }
 }
